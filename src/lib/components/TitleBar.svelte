@@ -81,6 +81,16 @@
     </button>
     <button
       class="icon-button"
+      class:beamer-active={app.beamer}
+      title={app.beamer
+        ? "Beamer-Modus beenden"
+        : "Beamer-Modus (große Schrift für Projektoren)"}
+      onclick={() => app.toggleBeamer()}
+    >
+      <Icon name="beamer" />
+    </button>
+    <button
+      class="icon-button"
       title={app.theme === "dark" ? "Helles Design" : "Dunkles Design"}
       onclick={() => app.toggleTheme()}
     >
@@ -130,5 +140,9 @@
   }
   .stop {
     color: var(--error);
+  }
+  .beamer-active {
+    color: var(--accent);
+    background: var(--button-hover);
   }
 </style>

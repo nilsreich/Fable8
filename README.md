@@ -15,8 +15,9 @@ ausgeführt — nach dem ersten Besuch komplett **offline** nutzbar.
   `SharedArrayBuffer` + `Atomics.wait()` zwischen Worker und Terminal
 - **Terminal**: xterm.js mit Local-Echo, Backspace, `Ctrl+C` (KeyboardInterrupt)
 - **Dateien**: txt/CSV & Co. lesen und schreiben; der Explorer zeigt alle vom
-  Python-Code erzeugten Dateien an. Persistenz über IndexedDB, Upload/Download
-  über die File System Access API (mit Fallback)
+  Python-Code erzeugten Dateien an. Persistenz über IndexedDB, Upload über die
+  File System Access API (mit Fallback), Download einzelner Dateien oder des
+  ganzen Arbeitsbereichs als ZIP
 - **Bilder/Plots**: `matplotlib` (eigenes Agg-Backend, `plt.show()` sendet PNGs
   ins Plots-Panel) sowie automatische Vorschau aller vom Code geschriebenen
   Bilddateien
@@ -26,6 +27,8 @@ ausgeführt — nach dem ersten Besuch komplett **offline** nutzbar.
   Paket-Wheels (numpy, matplotlib, pillow, micropip) werden beim ersten
   Online-Lauf vom CDN geladen und danach offline aus dem Cache bedient
 - **Design**: VS-Code-Look (Dark/Light Modern) mit Light- & Dark-Mode
+- **Beamer-Modus**: Ein Klick vergrößert Editor-, Terminal- und UI-Schrift
+  für Projektoren (Einstellung wird gespeichert)
 
 ## Entwicklung
 
@@ -52,9 +55,12 @@ Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
 ```
 
-injiziert der Service Worker selbst in Navigations-Antworten
+injiziert der Service Worker selbst in alle Same-Origin-Antworten
 (coi-serviceworker-Muster); beim allerersten Aufruf lädt die Seite dafür einmal
 automatisch neu. Kann der Host die Header direkt setzen, entfällt der Reload.
+Wichtig: `SharedArrayBuffer` erfordert zusätzlich einen sicheren Kontext —
+die Seite muss über **HTTPS oder `http://localhost`** geöffnet werden, ein
+Zugriff über eine LAN-IP (`http://192.168.…`) funktioniert nicht.
 
 ## Architektur
 

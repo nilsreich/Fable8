@@ -3,7 +3,8 @@ declare let self: ServiceWorkerGlobalScope;
 
 import { clientsClaim } from "workbox-core";
 import {
-  precacheAndRoute,
+  precache,
+  matchPrecache,
   cleanupOutdatedCaches,
   createHandlerBoundToURL,
 } from "workbox-precaching";
@@ -16,27 +17,44 @@ clientsClaim();
 cleanupOutdatedCaches();
 
 // App shell + pyodide core (wasm, stdlib) — fully available offline.
-precacheAndRoute(self.__WB_MANIFEST);
+// precache() only fills the cache; routing happens below in priority order.
+precache(self.__WB_MANIFEST);
 
 /**
- * Serve navigations from the precached index.html and inject the
- * cross-origin-isolation headers that SharedArrayBuffer requires
- * (the same trick as coi-serviceworker). Static hosts usually cannot
- * send these headers themselves.
+ * Injects the cross-origin-isolation headers that SharedArrayBuffer
+ * requires (same trick as coi-serviceworker) — static hosts usually cannot
+ * send them. The document needs COOP/COEP, and under require-corp every
+ * same-origin subresource (especially the worker script!) must carry the
+ * headers as well, otherwise the Pyodide worker is blocked.
  */
+function withCoiHeaders(response: Response): Response {
+  if (response.status === 0) return response; // opaque
+  const headers = new Headers(response.headers);
+  headers.set("Cross-Origin-Opener-Policy", "same-origin");
+  headers.set("Cross-Origin-Embedder-Policy", "require-corp");
+  headers.set("Cross-Origin-Resource-Policy", "cross-origin");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+// Navigations: precached index.html + isolation headers.
 const navigationHandler = createHandlerBoundToURL("index.html");
 registerRoute(
-  new NavigationRoute(async (params) => {
-    const response = await navigationHandler(params);
-    const headers = new Headers(response.headers);
-    headers.set("Cross-Origin-Opener-Policy", "same-origin");
-    headers.set("Cross-Origin-Embedder-Policy", "require-corp");
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers,
-    });
-  }),
+  new NavigationRoute(async (params) =>
+    withCoiHeaders(await navigationHandler(params)),
+  ),
+);
+
+// Same-origin assets: precache first, network fallback — always with headers.
+registerRoute(
+  ({ sameOrigin }) => sameOrigin,
+  async ({ request, url }) => {
+    const cached = await matchPrecache(url.href);
+    return withCoiHeaders(cached ?? (await fetch(request)));
+  },
 );
 
 // Python package wheels (numpy, matplotlib, ...) from the pyodide CDN.

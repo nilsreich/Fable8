@@ -1,5 +1,6 @@
 <script lang="ts">
   import { app, isImageFile, extensionOf } from "../state.svelte";
+  import { createZip } from "../zip";
   import Icon from "./Icon.svelte";
 
   let creating = $state(false);
@@ -63,29 +64,35 @@
     app.showToast(`„${file.name}“ importiert`);
   }
 
-  /** Download via File System Access API (fallback: <a download>). */
-  async function download(name: string) {
-    const record = app.file(name);
-    if (!record) return;
-    const blob = new Blob([record.data.buffer as ArrayBuffer]);
-    try {
-      if ("showSaveFilePicker" in window) {
-        const handle = await (window as any).showSaveFilePicker({
-          suggestedName: name,
-        });
-        const writable = await handle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-        return;
-      }
-    } catch (err: any) {
-      if (err?.name === "AbortError") return;
-    }
+  /**
+   * <a download> is deliberately used instead of showSaveFilePicker():
+   * it works in every browser, needs no permission dialog and saves
+   * straight to the download folder.
+   */
+  function saveBlob(blob: Blob, suggestedName: string) {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = name;
+    a.download = suggestedName;
     a.click();
-    URL.revokeObjectURL(a.href);
+    setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
+    app.showToast(`Download gestartet: ${suggestedName}`);
+  }
+
+  function download(name: string) {
+    const record = app.file(name);
+    if (!record) return;
+    saveBlob(new Blob([record.data.buffer as ArrayBuffer]), name);
+  }
+
+  function downloadAllAsZip() {
+    if (app.files.length === 0) return;
+    const zip = createZip(
+      app.files.map((f) => ({ name: f.name, data: f.data, mtime: f.mtime })),
+    );
+    saveBlob(
+      new Blob([zip.buffer as ArrayBuffer], { type: "application/zip" }),
+      "pyide-arbeitsbereich.zip",
+    );
   }
 </script>
 
@@ -105,6 +112,13 @@
       </button>
       <button class="icon-button" title="Datei hochladen" onclick={upload}>
         <Icon name="upload" size={14} />
+      </button>
+      <button
+        class="icon-button"
+        title="Alle Dateien als ZIP herunterladen"
+        onclick={downloadAllAsZip}
+      >
+        <Icon name="zip" size={14} />
       </button>
     </span>
   </div>
@@ -267,7 +281,9 @@
     display: none;
     align-items: center;
   }
-  .row:hover .row-actions {
+  /* Visible on hover and on the selected file (touch devices have no hover) */
+  .row:hover .row-actions,
+  .row.active .row-actions {
     display: flex;
   }
   .row-actions .icon-button {

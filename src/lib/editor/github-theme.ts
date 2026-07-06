@@ -14,7 +14,7 @@ function chrome(dark: boolean): Extension {
         color: "var(--editor-fg)",
         backgroundColor: "var(--editor-bg)",
         height: "100%",
-        fontSize: "13.5px",
+        fontSize: "var(--editor-font-size)",
       },
       ".cm-content": {
         caretColor: "var(--editor-fg)",

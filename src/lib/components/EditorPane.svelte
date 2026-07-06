@@ -124,6 +124,12 @@
     view?.dispatch({ effects: themeCompartment.reconfigure(ext) });
   });
 
+  // Beamer mode changes --editor-font-size; CodeMirror must re-measure.
+  $effect(() => {
+    void app.beamer;
+    view?.requestMeasure();
+  });
+
   // If Python rewrote the file that is open, refresh the document.
   $effect(() => {
     const name = app.activeFile;

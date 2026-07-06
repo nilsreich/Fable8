@@ -8,6 +8,7 @@
 
   let host: HTMLDivElement;
   let term: Terminal | null = null;
+  let fitAddon: FitAddon | null = null;
 
   const darkTheme = {
     background: "#181818",
@@ -41,13 +42,14 @@
       cursorBlink: true,
       fontFamily:
         'ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace',
-      fontSize: 13,
+      fontSize: untrack(() => app.beamer) ? 18 : 13,
       // untrack: the theme-change effect below updates the live instance;
       // this creation effect must not re-run (it would wipe the scrollback).
       theme: untrack(() => app.theme) === "dark" ? darkTheme : lightTheme,
       scrollback: 5000,
     });
     const fit = new FitAddon();
+    fitAddon = fit;
     terminal.loadAddon(fit);
     terminal.loadAddon(new WebLinksAddon());
     terminal.open(host);
@@ -107,12 +109,26 @@
       terminalBus.focus = () => {};
       terminal.dispose();
       term = null;
+      fitAddon = null;
     };
   });
 
   $effect(() => {
     if (term) {
       term.options.theme = app.theme === "dark" ? darkTheme : lightTheme;
+    }
+  });
+
+  // Beamer mode: larger terminal font
+  $effect(() => {
+    const size = app.beamer ? 18 : 13;
+    if (term) {
+      term.options.fontSize = size;
+      try {
+        fitAddon?.fit();
+      } catch {
+        // host hidden
+      }
     }
   });
 </script>

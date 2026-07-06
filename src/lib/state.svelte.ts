@@ -79,6 +79,7 @@ class AppState {
   activeFile = $state<string | null>(null);
 
   theme = $state<Theme>("dark");
+  beamer = $state(false);
   sidebarVisible = $state(true);
   panelTab = $state<PanelTab>("terminal");
   panelHeight = $state(260);
@@ -111,10 +112,14 @@ class AppState {
     });
   }
 
-  async init() {
+  async init(
+    options: { startRunner?: boolean; runnerBlockedMessage?: string } = {},
+  ) {
+    const { startRunner = true, runnerBlockedMessage } = options;
     this.theme =
       (await db.getSetting<Theme>("theme")) ??
       (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    this.beamer = (await db.getSetting<boolean>("beamer")) ?? false;
 
     this.files = (await db.loadAllFiles()).sort((a, b) =>
       a.name.localeCompare(b.name),
@@ -140,6 +145,11 @@ class AppState {
       if (candidate) this.openFile(candidate);
     }
 
+    if (!startRunner) {
+      this.runnerStatus = "booting";
+      this.statusDetail = runnerBlockedMessage ?? "";
+      return;
+    }
     if (this.runner.supported) {
       this.runner.start();
       const waitReady = setInterval(() => {
@@ -151,6 +161,7 @@ class AppState {
     } else {
       this.runnerStatus = "error";
       this.statusDetail =
+        runnerBlockedMessage ??
         "SharedArrayBuffer nicht verfügbar (Seite ist nicht cross-origin-isoliert). Bitte Seite neu laden.";
     }
   }
@@ -338,6 +349,12 @@ class AppState {
   toggleTheme() {
     this.theme = this.theme === "dark" ? "light" : "dark";
     void db.setSetting("theme", this.theme);
+  }
+
+  /** Presentation mode: larger fonts for projectors. */
+  toggleBeamer() {
+    this.beamer = !this.beamer;
+    void db.setSetting("beamer", this.beamer);
   }
 
   showToast(message: string) {

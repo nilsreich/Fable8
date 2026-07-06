@@ -11,6 +11,10 @@
     document.documentElement.dataset.theme = app.theme;
   });
 
+  $effect(() => {
+    document.documentElement.dataset.beamer = app.beamer ? "1" : "0";
+  });
+
   let resizingSidebar = $state(false);
 
   function startSidebarResize(event: PointerEvent) {

@@ -29,13 +29,6 @@
     <Icon name="image" size={22} />
   </button>
   <div class="spacer"></div>
-  <button
-    class="item"
-    title={app.theme === "dark" ? "Helles Design" : "Dunkles Design"}
-    onclick={() => app.toggleTheme()}
-  >
-    <Icon name={app.theme === "dark" ? "sun" : "moon"} size={20} />
-  </button>
 </nav>
 
 <style>
