@@ -7,6 +7,7 @@
 
   function startResize(event: PointerEvent) {
     event.preventDefault();
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
     resizing = true;
     const startY = event.clientY;
     const startHeight = app.panelHeight;
@@ -72,6 +73,9 @@
     background: var(--panel-bg);
     border-top: 1px solid var(--border);
     flex-shrink: 0;
+    /* nie den ganzen Editor verdrängen (z. B. wenn die Tastatur aufgeht) */
+    max-height: calc(100% - 80px);
+    min-height: 76px;
   }
   .resizer {
     position: absolute;
@@ -81,6 +85,13 @@
     height: 6px;
     cursor: ns-resize;
     z-index: 10;
+    touch-action: none;
+  }
+  @media (pointer: coarse) {
+    .resizer {
+      top: -8px;
+      height: 16px;
+    }
   }
   .resizer:hover,
   .resizer.active {
@@ -105,6 +116,12 @@
     text-transform: uppercase;
     color: var(--fg-muted);
     border-bottom: 1px solid transparent;
+  }
+  @media (pointer: coarse) {
+    .panel-tab {
+      padding: 11px 8px 9px;
+      font-size: 12px;
+    }
   }
   .panel-tab.active {
     color: var(--fg);

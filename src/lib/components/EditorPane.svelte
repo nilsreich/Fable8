@@ -270,6 +270,18 @@
     background: var(--button-hover);
     color: var(--fg);
   }
+  @media (pointer: coarse) {
+    .tab {
+      height: 44px;
+      padding: 0 10px 0 16px;
+    }
+    /* Ohne Hover: Schließen-Kreuz immer anzeigen */
+    .tab-close {
+      color: var(--fg-muted);
+      width: 30px;
+      height: 30px;
+    }
+  }
   .content {
     position: relative;
     flex: 1;

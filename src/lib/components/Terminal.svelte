@@ -36,13 +36,15 @@
   // Local line editing while Python waits on input()
   let inputBuffer = "";
 
+  const baseFontSize = matchMedia("(pointer: coarse)").matches ? 14 : 13;
+
   $effect(() => {
     const terminal = new Terminal({
       convertEol: true,
       cursorBlink: true,
       fontFamily:
         'ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace',
-      fontSize: untrack(() => app.beamer) ? 18 : 13,
+      fontSize: untrack(() => app.beamer) ? 18 : baseFontSize,
       // untrack: the theme-change effect below updates the live instance;
       // this creation effect must not re-run (it would wipe the scrollback).
       theme: untrack(() => app.theme) === "dark" ? darkTheme : lightTheme,
@@ -121,7 +123,7 @@
 
   // Beamer mode: larger terminal font
   $effect(() => {
-    const size = app.beamer ? 18 : 13;
+    const size = app.beamer ? 18 : baseFontSize;
     if (term) {
       term.options.fontSize = size;
       try {

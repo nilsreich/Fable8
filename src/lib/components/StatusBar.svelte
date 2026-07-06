@@ -55,12 +55,18 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 22px;
-    padding: 0 10px;
+    height: calc(22px + env(safe-area-inset-bottom, 0px));
+    padding: 0 10px env(safe-area-inset-bottom, 0px);
     background: var(--statusbar-bg);
     color: var(--statusbar-fg);
     font-size: 12px;
     user-select: none;
+    flex-shrink: 0;
+  }
+  @media (pointer: coarse) {
+    .statusbar {
+      height: calc(28px + env(safe-area-inset-bottom, 0px));
+    }
   }
   .statusbar.error {
     background: var(--error);

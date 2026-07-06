@@ -130,6 +130,16 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  @media (pointer: coarse) {
+    .titlebar {
+      height: 48px;
+    }
+  }
+  @media (max-width: 600px) {
+    .center {
+      display: none;
+    }
+  }
   .right {
     display: flex;
     justify-content: flex-end;

@@ -8,7 +8,15 @@
   --ui-font-size: 13px;
 }
 
-/* Beamer-Modus: große Schrift für Projektoren */
+/* Touch-Geräte: >=16px verhindert den Auto-Zoom von iOS beim Fokussieren */
+@media (pointer: coarse) {
+  :root {
+    --editor-font-size: 16px;
+    --ui-font-size: 14px;
+  }
+}
+
+/* Beamer-Modus: große Schrift für Projektoren (gewinnt über pointer:coarse) */
 :root[data-beamer="1"] {
   --editor-font-size: 20px;
   --ui-font-size: 15px;
@@ -92,6 +100,8 @@ body {
   padding: 0;
   height: 100%;
   overflow: hidden;
+  /* kein Pull-to-Refresh/Gummiband beim Ziehen an Panels und Listen */
+  overscroll-behavior: none;
 }
 
 body {
@@ -114,6 +124,8 @@ button {
   border: none;
   padding: 0;
   cursor: pointer;
+  /* kein 300ms-Delay / Doppeltipp-Zoom auf Touch-Geräten */
+  touch-action: manipulation;
 }
 
 input[type="text"] {
@@ -167,4 +179,30 @@ input[type="text"]:focus {
 .icon-button svg {
   width: 16px;
   height: 16px;
+}
+
+/* ---- Touch-Targets (Tablets & Phones) -------------------------------- */
+@media (pointer: coarse) {
+  .icon-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+  }
+  .icon-button svg {
+    width: 19px;
+    height: 19px;
+  }
+  input[type="text"] {
+    font-size: 16px; /* verhindert iOS-Auto-Zoom */
+    padding: 7px 8px;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* xterm fokussiert eine versteckte Textarea — ohne 16px zoomt iOS hinein */
+.xterm-helper-textarea {
+  font-size: 16px !important;
 }

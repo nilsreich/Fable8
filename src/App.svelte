@@ -19,6 +19,7 @@
 
   function startSidebarResize(event: PointerEvent) {
     event.preventDefault();
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
     resizingSidebar = true;
     const startX = event.clientX;
     const startWidth = app.sidebarWidth;
@@ -36,6 +37,22 @@
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
   }
+
+  // Keep the panel usable when the viewport shrinks (rotation, keyboard):
+  // clamp its height so at least ~80px of editor remain visible.
+  $effect(() => {
+    const clamp = () => {
+      const height = window.visualViewport?.height ?? window.innerHeight;
+      const max = Math.max(height - 160, 80);
+      if (app.panelHeight > max) app.panelHeight = max;
+    };
+    window.addEventListener("resize", clamp);
+    window.visualViewport?.addEventListener("resize", clamp);
+    return () => {
+      window.removeEventListener("resize", clamp);
+      window.visualViewport?.removeEventListener("resize", clamp);
+    };
+  });
 </script>
 
 <div class="shell">
@@ -69,9 +86,13 @@
   .shell {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    /* --app-height: VisualViewport-Fallback (iPadOS) bei offener Tastatur */
+    height: var(--app-height, 100dvh);
+    /* VirtualKeyboard API (Chromium): Tastatur überlagert, wir weichen aus */
+    padding-bottom: env(keyboard-inset-height, 0px);
   }
   .middle {
+    position: relative; /* Anker für die Overlay-Sidebar auf schmalen Screens */
     display: flex;
     flex: 1;
     min-height: 0;
@@ -82,6 +103,19 @@
     cursor: ew-resize;
     z-index: 10;
     flex-shrink: 0;
+    touch-action: none;
+  }
+  @media (pointer: coarse) {
+    .sidebar-resizer {
+      width: 16px;
+      margin-left: -8px;
+    }
+  }
+  @media (max-width: 700px) {
+    /* Sidebar liegt als Overlay über dem Editor — Breite dort fix */
+    .sidebar-resizer {
+      display: none;
+    }
   }
   .sidebar-resizer:hover,
   .sidebar-resizer.active {

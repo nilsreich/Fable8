@@ -8,6 +8,15 @@
   let renaming = $state<string | null>(null);
   let renameValue = $state("");
 
+  function openFile(name: string) {
+    app.openFile(name);
+    // Auf schmalen Screens liegt die Sidebar als Overlay über dem Editor —
+    // nach der Auswahl wieder Platz machen.
+    if (matchMedia("(max-width: 700px)").matches) {
+      app.sidebarVisible = false;
+    }
+  }
+
   function fileColor(name: string): string {
     const ext = extensionOf(name);
     if (ext === "py") return "var(--accent)";
@@ -146,8 +155,8 @@
         class:active={app.activeFile === file.name}
         role="button"
         tabindex="0"
-        onclick={() => app.openFile(file.name)}
-        onkeydown={(e) => e.key === "Enter" && app.openFile(file.name)}
+        onclick={() => openFile(file.name)}
+        onkeydown={(e) => e.key === "Enter" && openFile(file.name)}
       >
         {#if renaming === file.name}
           <input
@@ -224,6 +233,18 @@
     overflow: hidden;
     user-select: none;
   }
+  /* Schmale Viewports (Tablet hochkant geteilt, Phone): Overlay statt Split */
+  @media (max-width: 700px) {
+    .sidebar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 30;
+      width: min(300px, calc(100vw - 80px)) !important;
+      box-shadow: var(--shadow);
+    }
+  }
   .header {
     display: flex;
     align-items: center;
@@ -255,6 +276,13 @@
     padding: 2px 8px 2px 18px;
     min-height: 24px;
     cursor: pointer;
+    touch-action: manipulation;
+  }
+  @media (pointer: coarse) {
+    .row {
+      min-height: 42px;
+      padding-block: 4px;
+    }
   }
   .row input {
     width: 100%;
@@ -289,6 +317,12 @@
   .row-actions .icon-button {
     width: 20px;
     height: 20px;
+  }
+  @media (pointer: coarse) {
+    .row-actions .icon-button {
+      width: 36px;
+      height: 36px;
+    }
   }
   .empty {
     padding: 8px 18px;

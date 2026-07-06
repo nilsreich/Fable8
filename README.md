@@ -29,6 +29,10 @@ ausgeführt — nach dem ersten Besuch komplett **offline** nutzbar.
 - **Design**: VS-Code-Look (Dark/Light Modern) mit Light- & Dark-Mode
 - **Beamer-Modus**: Ein Klick vergrößert Editor-, Terminal- und UI-Schrift
   für Projektoren (Einstellung wird gespeichert)
+- **Tablet-tauglich**: Touch-Targets ≥ 40 px, 16-px-Mindestschrift gegen den
+  iOS-Auto-Zoom, virtuelle Tastatur über VirtualKeyboard API /
+  `interactive-widget=resizes-content` / VisualViewport-Fallback, Overlay-
+  Explorer auf schmalen Viewports, Safe-Area-Insets
 
 ## Entwicklung
 

@@ -2,6 +2,7 @@ import { mount } from "svelte";
 import "./app.css";
 import App from "./App.svelte";
 import { app } from "./lib/state.svelte";
+import { setupViewport } from "./lib/viewport";
 
 type CoiResult =
   | { state: "ok" }
@@ -95,6 +96,7 @@ async function ensureCrossOriginIsolation(): Promise<CoiResult> {
 }
 
 async function bootstrap() {
+  setupViewport();
   mount(App, { target: document.getElementById("app")! });
   const coi = await ensureCrossOriginIsolation();
   if (coi.state === "reloading") {
