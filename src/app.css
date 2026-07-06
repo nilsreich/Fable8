@@ -1,0 +1,162 @@
+/* VS Code (Dark/Light Modern) inspired design tokens */
+:root {
+  --mono-font: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Ubuntu,
+    "Helvetica Neue", sans-serif;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #181818;
+  --fg: #cccccc;
+  --fg-muted: #9d9d9d;
+  --editor-bg: #1f1f1f;
+  --editor-fg: #e6edf3;
+  --titlebar-bg: #181818;
+  --activitybar-bg: #181818;
+  --activitybar-fg: #868686;
+  --activitybar-active: #d7d7d7;
+  --sidebar-bg: #181818;
+  --sidebar-hover: #2a2d2e;
+  --sidebar-active: #37373d;
+  --panel-bg: #181818;
+  --tab-bg: #181818;
+  --tab-active-bg: #1f1f1f;
+  --tab-fg: #9d9d9d;
+  --tab-active-fg: #ffffff;
+  --statusbar-bg: #0078d4;
+  --statusbar-fg: #ffffff;
+  --border: #2b2b2b;
+  --accent: #0078d4;
+  --accent-fg: #ffffff;
+  --input-bg: #313131;
+  --input-border: #3c3c3c;
+  --button-hover: #ffffff1a;
+  --error: #f85149;
+  --success: #3fb950;
+  --warning: #d29922;
+  --shadow: 0 4px 12px #00000066;
+  --terminal-bg: #181818;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f8f8f8;
+  --fg: #3b3b3b;
+  --fg-muted: #616161;
+  --editor-bg: #ffffff;
+  --editor-fg: #1f2328;
+  --titlebar-bg: #f8f8f8;
+  --activitybar-bg: #f8f8f8;
+  --activitybar-fg: #7f7f7f;
+  --activitybar-active: #1f1f1f;
+  --sidebar-bg: #f8f8f8;
+  --sidebar-hover: #e8e8e8;
+  --sidebar-active: #e4e6f1;
+  --panel-bg: #ffffff;
+  --tab-bg: #f8f8f8;
+  --tab-active-bg: #ffffff;
+  --tab-fg: #616161;
+  --tab-active-fg: #1f1f1f;
+  --statusbar-bg: #005fb8;
+  --statusbar-fg: #ffffff;
+  --border: #e5e5e5;
+  --accent: #005fb8;
+  --accent-fg: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #cecece;
+  --button-hover: #0000000f;
+  --error: #cf222e;
+  --success: #1a7f37;
+  --warning: #9a6700;
+  --shadow: 0 4px 12px #00000022;
+  --terminal-bg: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--ui-font);
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  height: 100%;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+input[type="text"] {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--fg);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 2px;
+  padding: 3px 6px;
+  outline: none;
+}
+input[type="text"]:focus {
+  border-color: var(--accent);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg-muted) 35%, transparent);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--fg-muted) 55%, transparent);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  color: var(--fg-muted);
+  flex-shrink: 0;
+}
+.icon-button:hover {
+  background: var(--button-hover);
+  color: var(--fg);
+}
+.icon-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+  background: none;
+}
+.icon-button svg {
+  width: 16px;
+  height: 16px;
+}

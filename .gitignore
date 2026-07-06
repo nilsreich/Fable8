@@ -1,0 +1,7 @@
+node_modules/
+dist/
+dev-dist/
+public/pyodide/
+src/lib/pyodide-version.ts
+*.local
+.DS_Store
